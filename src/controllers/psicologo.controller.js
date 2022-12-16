@@ -1,4 +1,4 @@
-const AtendimentosModel = require("../models/Atendimentos");
+const PsicologosModel = require("../models/psicologos");
 
 module.exports = {
     async createPsicologo(req, res) {
@@ -40,6 +40,4 @@ module.exports = {
         });
         return res.status(204).json(psicologoDestroyed);
     },
-
-    
 }
