@@ -5,8 +5,8 @@ const authController = require("../controllers/authController");
 const loginValidation = require("../validations/auth/login");
 const auth = require("../middlewares/auth");
 const validateCreatePsicologo = require("../validations/create/psicologo");
-const pacienteCreateValidation = require("../validations/pacientes/create");
-const pacienteUpdateValidation = require("../validations/pacientes/update");
+const pacienteCreateValidation = require("../validations/create/paciente");
+const pacienteUpdateValidation = require("../validations/update/paciente");
 
 const dashboardController = require("../controllers/dashboard.controller");
 const routes = express.Router();
