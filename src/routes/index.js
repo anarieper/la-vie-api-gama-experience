@@ -1,7 +1,7 @@
 const express = require("express");
-const psicologosController = require("../controllers/psicologos.controller");
+//const psicologosController = require("../controllers/psicologos.controller");
 const pacientesController = require("../controllers/pacientesController");
-const authController = require("../controllers/authController");
+const authController = require("../controllers/auth.controller");
 const loginValidation = require("../validations/auth/login");
 const auth = require("../middlewares/auth");
 const validateCreatePsicologo = require("../validations/create/psicologo");
@@ -11,11 +11,6 @@ const pacienteUpdateValidation = require("../validations/update/paciente");
 const dashboardController = require("../controllers/dashboard.controller");
 const routes = express.Router();
 
-routes.get("/psicologos", psicologosController.list);
-routes.get("/psicologos/:id", psicologosController.listId);
-routes.post("/psicologos", validateCreatePsicologo, psicologosController.create);
-routes.put("/psicologos/:id", psicologosController.update);
-routes.delete("/psicologos/:id", psicologosController.delete);
 
 routes.get("/pacientes", pacientesController.listarPacientes);
 routes.get("/pacientes/:id", pacientesController.listarPacienteId);
