@@ -1,11 +1,14 @@
-const PacientesModel = require("../models/Pacientes");
+const PsicologosModel = require("../models/Psicologos");
+const bcrypt = require("bcrypt");
 
-const pacientesController = {
+const psicologosController = {
     async list(req, res) {
         try {
-            const listPacientes = await PacientesModel.findAll();
+            const listPsicologos = await PsicologosModel.findAll({
+                attributes: ['psicologo_id', 'nome', 'email', 'apresentacao']
+            });
 
-            return res.status(200).json(listPacientes);
+            return res.status(200).json(listPsicologos);
         } catch (err) {
             return res.status(500).json("Algo errado aconteceu 🚨");
         }
@@ -14,54 +17,57 @@ const pacientesController = {
     async listId(req, res) {
         try {
             const { id } = req.params;
-            const listPacienteId = await PacientesModel.findOne({
+            const listPsicologoId = await PsicologosModel.findOne({
+                attributes: ['psicologo_id', 'nome', 'email', 'apresentacao'],
                 where: {
-                    paciente_id: id,
-                }
+                    psicologo_id: id,
+                },
             });
 
-            if (!listPacienteId) {
+            if (!listPsicologoId) {
                 return res.status(404).json("Id não encontrado")
             };
 
-            return res.status(200).json(listPacienteId);
+            return res.status(200).json(listPsicologoId);
         } catch (error) {
-            console.log(error);
             return res.status(500).json("Algo errado aconteceu 🚨");
         }
     },
 
     async create(req, res) {
         try {
-            const { nome, email, idade } = req.body;
+            const { nome, email, apresentacao, senha } = req.body;
 
-            const newPaciente = await PacientesModel.create({
+            const newPassword = bcrypt.hashSync(senha, 10);
+
+            const newPsicologo = await PsicologosModel.create({
                 nome,
                 email,
-                idade,
+                apresentacao,
+                senha: newPassword,
             });
 
-            return res.status(201).json(newPaciente);
+            return res.status(201).json(newPsicologo);
         } catch (error) {
             if (error.name === 'SequelizeUniqueConstraintError') {
-                return res.status(422).json('Email já cadastrado')
+                return res.status(400).json('Email já cadastrado')
             }
             return res.status(500).json("Algo errado aconteceu 🚨");
         }
     },
-    
+
     async update(req, res) {
         try {
             const { id } = req.params;
             const { nome, email, idade } = req.body;
 
-            const updatePaciente = await PacientesModel.update({
+            const updatePsicologo = await PsicologosModel.update({
                 nome,
                 email,
                 idade,
             }, {
                 where: {
-                    paciente_id: id
+                    psicologo_id: id
                 },
             });
 
@@ -75,21 +81,23 @@ const pacientesController = {
         try {
             const { id } = req.params;
 
-            const deletePaciente = await PacientesModel.destroy({
+            const deletePsicologo = await PsicologosModel.destroy({
                 where: {
-                    paciente_id: id,
+                    psicologo_id: id,
                 },
             });
 
-            if (!deletePaciente) {
+            if (!deletePsicologo) {
                 return res.status(404).json("Id não encontrado")
             };
 
             return res.sendStatus(204);
         } catch (error) {
+          
+            console.log(error);
             return res.status(500).json("Algo errado aconteceu 🚨");
         }
     },
 }
 
-module.exports = pacientesController;
+module.exports = psicologosController;

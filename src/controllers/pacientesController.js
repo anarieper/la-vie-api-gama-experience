@@ -1,94 +1,95 @@
-const {Pacientes} = require("../models");
+const PacientesModel = require("../models/Pacientes");
 
 const pacientesController = {
+    async list(req, res) {
+        try {
+            const listPacientes = await PacientesModel.findAll();
 
-    async cadastrarPaciente(req, res){
-        const { nome, email, idade } = req.body;
-
-        const novoPaciente = await Pacientes.create({
-            nome, 
-            email,
-            idade,
-        });
-
-        res.json(novoPaciente);
-    },
-
-    async listarPacientes(req, res){
-        const listaDePacientes = await Pacientes.findAll();
-
-        res.json(listaDePacientes);
-    },
-
-    async listarPacienteId(req, res){
-        const { id } = req.params;
-
-        const listaPacienteId = await Pacientes.findOne({
-            where: {
-                paciente_id: id,
-            },
-        });
-
-        if(listaPacienteId === null){
-            return res.status(404).json("Id não encontrado");
-        } else {
-            res.json(listaPacienteId);
+            return res.status(200).json(listPacientes);
+        } catch (err) {
+            return res.status(500).json("Algo errado aconteceu 🚨");
         }
-        
-
     },
 
-    async atualizarPaciente(req, res){
-        const { id } = req.params;
-        const { nome, email, idade } = req.body;
-
-        await Pacientes.update({
-            nome,
-            email,
-            idade,
-        },
-        {
-            where: {
-                paciente_id: id,
-            },
-        }
-        );
-
-        res.status(200).json(req.body);
-    },
-
-    async deletarPaciente(req, res){
-        const { id } = req.params;
-        
-        const findPaciente = await Pacientes.findOne({
-            where: {
-                paciente_id: id,
-            }
-        });
-
-        if(findPaciente === null){                                             
-            res.status(404).json("Id não encontrado");
-        } else{ 
-
-            try {
-                await Pacientes.destroy({
-                    where: {
-                        paciente_id: id,  
-                    } 
-                });
-
-                return res.status(204).json("Cadastro deletado!");
-
-            } catch (error){
-                if (error.name === 'SequelizeForeignKeyConstraintError') {
-                    return res.status(400).json('Não é possível deletar o paciente pois ele possui atendimentos ativos')
+    async listId(req, res) {
+        try {
+            const { id } = req.params;
+            const listPacienteId = await PacientesModel.findOne({
+                where: {
+                    paciente_id: id,
                 }
-            }     
+            });
+
+            if (!listPacienteId) {
+                return res.status(404).json("Id não encontrado")
+            };
+
+            return res.status(200).json(listPacienteId);
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json("Algo errado aconteceu 🚨");
         }
+    },
 
-},
+    async create(req, res) {
+        try {
+            const { nome, email, idade } = req.body;
 
+            const newPaciente = await PacientesModel.create({
+                nome,
+                email,
+                idade,
+            });
 
-}; 
+            return res.status(201).json(newPaciente);
+        } catch (error) {
+            if (error.name === 'SequelizeUniqueConstraintError') {
+                return res.status(422).json('Email já cadastrado')
+            }
+            return res.status(500).json("Algo errado aconteceu 🚨");
+        }
+    },
+    
+    async update(req, res) {
+        try {
+            const { id } = req.params;
+            const { nome, email, idade } = req.body;
+
+            const updatePaciente = await PacientesModel.update({
+                nome,
+                email,
+                idade,
+            }, {
+                where: {
+                    paciente_id: id
+                },
+            });
+
+            return res.status(200).json("Dados atualizados");
+        } catch (error) {
+            return res.status(400).json("Algo errado aconteceu 🚨");
+        }
+    },
+
+    async delete(req, res) {
+        try {
+            const { id } = req.params;
+
+            const deletePaciente = await PacientesModel.destroy({
+                where: {
+                    paciente_id: id,
+                },
+            });
+
+            if (!deletePaciente) {
+                return res.status(404).json("Id não encontrado")
+            };
+
+            return res.sendStatus(204);
+        } catch (error) {
+            return res.status(500).json("Algo errado aconteceu 🚨");
+        }
+    },
+}
 
 module.exports = pacientesController;

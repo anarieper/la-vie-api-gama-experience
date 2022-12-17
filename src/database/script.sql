@@ -28,3 +28,9 @@ CREATE TABLE atendimentos (
   CONSTRAINT atendimento_psicologo FOREIGN KEY
             (id_psicologo) REFERENCES psicologos(psicologo_id)
 );
+
+
+/* Optamos por não inserir o "cascade" nas chaves estrangeiras de atendimentos,
+como no desafio não pedia o delete de atendimento, entendemos que era pra deixar o
+padrão do banco de dados e proibindo que o psicólogo ou o paciente que tivesse aendimento
+cadastrado, não poderia ser excluído */
